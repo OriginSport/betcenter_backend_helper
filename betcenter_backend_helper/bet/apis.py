@@ -34,9 +34,10 @@ class AddBetAPI(AbstractAPI):
         if not bi:
             bi = BetItem()
         bi.address = address
-        bi.start_time = start_time
+        bi.start_time = datetime.datetime.fromtimestamp(start_time)
         bi.deposit = deposit
         bi.category = category
+        bi.date = datetime.datetime.fromtimestamp(start_time).date().isoformat()[:10]
         bi.save()
         return True, bi.get_full_json()
 
