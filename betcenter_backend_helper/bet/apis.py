@@ -22,6 +22,8 @@ class AddBetAPI(AbstractAPI):
                 'start_time': 'r',
                 'deposit': 'r',
                 'category': 'r',
+                'contract': 'r',
+                'network_id': 'r',
                 }
 
     def access_db(self, kwarg):
@@ -29,15 +31,19 @@ class AddBetAPI(AbstractAPI):
         start_time = kwarg['start_time']
         deposit = kwarg['deposit']
         category = kwarg['category']
+        contract = kwarg['contract']
+        network_id = kwarg['network_id']
 
         bi = BetItem.objects.filter(address=address).first()
         if not bi:
             bi = BetItem()
         bi.address = address
-        bi.start_time = datetime.datetime.fromtimestamp(start_time)
+        bi.start_time = datetime.datetime.fromtimestamp(float(start_time))
         bi.deposit = deposit
         bi.category = category
-        bi.date = datetime.datetime.fromtimestamp(start_time).date().isoformat()[:10]
+        bi.contract = contract 
+        bi.network_id = network_id
+        bi.date = datetime.datetime.fromtimestamp(float(start_time)).date().isoformat()[:10]
         bi.save()
         return True, bi.get_full_json()
 
@@ -52,13 +58,17 @@ class QueryBetByCategoryAPI(AbstractAPI):
     def config_args(self):
         self.args = {
                 'category': 'r',
+                'contract': 'r',
+                'network_id': 'r',
                 'date': ('o', None),
                 }
     def access_db(self, kwarg):
         category = kwarg['category']
         date = kwarg['date']
+        contract = kwarg['contract']
+        network_id = kwarg['network_id']
 
-        bis = BetItem.objects.filter(category=category).all()
+        bis = BetItem.objects.filter(contract=contract, network_id=network_id, category=category).all()
         if date:
             bis.filter(date=date).all()
         bis.order_by('deposit')

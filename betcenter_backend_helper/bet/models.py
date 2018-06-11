@@ -16,9 +16,11 @@ class BetItem(BaseModel):
 
     address = models.CharField(max_length=42, primary_key=True)
     category = models.CharField(max_length=42)
+    contract = models.CharField(max_length=42, default='')
     date = models.CharField(max_length=10)
     start_time = models.DateTimeField()
-    deposit = models.IntegerField()
+    deposit = models.FloatField()
+    network_id = models.IntegerField(default=3)
 
     def __str__(self):
         return 'BetItem:%s' % (self.address)
