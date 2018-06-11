@@ -70,7 +70,7 @@ class QueryBetByCategoryAPI(AbstractAPI):
 
         bis = BetItem.objects.filter(contract=contract, network_id=network_id, category=category).all()
         if date:
-            bis.filter(date=date).all()
+            bis = bis.filter(date=date).all()
         bis.order_by('deposit')
         data = format_bet_items(bis)
         return True, data
