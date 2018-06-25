@@ -81,3 +81,4 @@ class QueryBetByCategoryAPI(AbstractAPI):
         return fail_json(err.ERROR_CODE_DATABASE_QUERY_ERROR)
 
 query_bet_by_category_api = QueryBetByCategoryAPI().wrap_func()
+

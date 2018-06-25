@@ -19,4 +19,6 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^betcenter/api/', include('betcenter_backend_helper.bet.urls')),
+    url(r'^betcenter/api/', include('betcenter_backend_helper.bet_record.urls')),
+
 ]

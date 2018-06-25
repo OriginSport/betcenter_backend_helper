@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'daterange_filter',
     'corsheaders',
     'betcenter_backend_helper.bet',
+    'betcenter_backend_helper.bet_record',
 ]
 
 MIDDLEWARE = [
