@@ -49,9 +49,14 @@ def get_game_id(b):
             if b[i]==b[i+1]==b[i+2]:
                 l.append(i)
 
-        b = b[0:l[0]]
+        if l[0]%2==0:
+            b = b[0:l[0]]
+
+        else:
+            b = b[0:l[1]]
+
         L = []
-        for x in range(int(l[0] / 2)):
+        for x in range(int(len(b) / 2)):
             L.append(b[2 * x:2 * x + 2])
 
         str_l = []
@@ -124,6 +129,7 @@ def data():
         contract_address_list = []
 
         contract_game_id_dic = {}
+        main_contract_tx_contract_dic = {}
 
         for tx in tx_hash_list:
             new_url = 'https://api.etherscan.io/api?module=account&action=txlistinternal&txhash=%s&apikey=YourApiKeyToken' %tx
@@ -144,8 +150,10 @@ def data():
                                 contract_address = result[0].get('contractAddress')
                                 contract_address_list.append(contract_address)
                                 contract_game_id_dic.update({contract_address:tx_hash_game_id_dic.get(tx)})
+                                main_contract_tx_contract_dic.update({contract_address:tx})
 
         print('contract_address_list','======================')
+        print(main_contract_tx_contract_dic)
         print(contract_address_list)
         for addr in contract_address_list:
             url = 'http://api.etherscan.io/api?module=account&action=txlist&address=%s&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken' %addr
@@ -179,19 +187,25 @@ def data():
 
                                     value = int(value)/math.pow(10,18)
                                     game_id = contract_game_id_dic.get(addr)
+                                    #print(utc_str)
 
-
+                                    main_contract_txhash = main_contract_tx_contract_dic.get(addr)
 
                                     print('tx_hash',tx_hash,'address',address,'to',to,'value',value)
                                     print('contract',addr, 'game_id', game_id)
+                                    print('main_contract_txhash',main_contract_tx_contract_dic.get(addr))
+
 
 
                                     if value>0:
                                         if BetRecord.objects.filter(tx_hash=tx_hash, address=address, to=to):
-                                            BetRecord.objects.filter(tx_hash=tx_hash, address=address, to=to).update(category='world_cup', contract=addr)
+                                            BetRecord.objects.filter(tx_hash=tx_hash, address=address, to=to).update(category='world_cup',
+                                            contract=addr,time_stamp=time_stamp,time=utc_str,game_id=game_id,
+                                                                            main_contract_txhash=main_contract_txhash)
                                         else:
                                             BetRecord.objects.create(tx_hash=tx_hash,address=address, to=to, time=utc_str,
-                                                                     quantity=value,game_id=game_id)
+                                                                     quantity=value,game_id=game_id, contract=addr,
+                                                                     main_contract_txhash=main_contract_txhash)
 
 
 
