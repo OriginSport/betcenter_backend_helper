@@ -14,14 +14,15 @@ class BetRecord(BaseModel):
     address = models.CharField(max_length=42)
     category = models.CharField(max_length=42, default='')
     contract = models.CharField(max_length=42)
-    date = models.CharField(max_length=10)
-    #time_str = models.DateTimeField()
-    time =  models.DateTimeField()
+    time_stamp = models.CharField(max_length=20, null=True, blank=True)
+    time =  models.DateTimeField(null=True, db_index=True, default=None)
     tx_hash = models.CharField(max_length=88, default='')
     to = models.CharField(max_length=42)
     quantity = models.CharField(max_length=30)
-    network_id = models.IntegerField(default=3)
+    network_id = models.IntegerField(default=1)
     game_id = models.IntegerField(null=True,blank=True)
+    main_contract_txhash = models.CharField(max_length=88, default='')
+
     
 
 

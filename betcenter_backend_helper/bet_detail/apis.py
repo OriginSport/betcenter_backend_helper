@@ -11,17 +11,17 @@ from django.db import transaction
 import utils.errors as err
 from utils.view_tools import ok_json, fail_json, get_real_ip
 from utils.abstract_api import AbstractAPI
-from .models import BetRecord, format_bet_records
+from .models import BetDetail, format_bet_details
 
 
 logging.basicConfig(level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 
-class QueryBetRecordByAddressAPI(AbstractAPI):
+class QueryBetDeatilByTxhashAPI(AbstractAPI):
     def config_args(self):
         self.args = {
-                'address': 'r',
+                'txhash': 'r',
                 'network_id': 'r',
                 'category': ('o', None),
                 }
@@ -29,11 +29,11 @@ class QueryBetRecordByAddressAPI(AbstractAPI):
     def access_db(self, kwarg):
         category = kwarg['category']
         network_id = kwarg['network_id']
-        address = kwarg['address']
+        txhash = kwarg['txhash']
 
-        brs = BetRecord.objects.filter(address=address, network_id=network_id).all().order_by('-time_stamp')
+        bds = BetDetail.objects.filter(tx_hash=txhash, network_id=network_id).all().order_by('-time_stamp')
 
-        data = format_bet_records(brs)
+        data = format_bet_details(bds)
         return True, data
 
 
@@ -43,7 +43,7 @@ class QueryBetRecordByAddressAPI(AbstractAPI):
         return fail_json(err.ERROR_CODE_DATABASE_QUERY_ERROR)
 
 
-query_bet_record_by_address_api = QueryBetRecordByAddressAPI().wrap_func()
+query_bet_detail_by_txhash_api = QueryBetDeatilByTxhashAPI().wrap_func()
 
 
 
