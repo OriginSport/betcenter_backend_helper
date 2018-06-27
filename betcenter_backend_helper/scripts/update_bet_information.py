@@ -138,32 +138,45 @@ def data():
 
                                 print(b0,b1,b2,b3,b4,b5,b6,b7,b8,b9)
 
-
-
-                                category = str_category(b0)
-                                game_id = get_game_id(b1)
-                                minimumbet = fun(b2)
-                                spread = fun(b3)
-                                left_odds = fun(b4)
-                                middle_odds = fun(b5)
-                                right_odds = fun(b6)
-                                flag = fun(b7)
-                                starttime = fun(b8)
-                                confirmations = fun(b9)
-
-
-                                print(category,game_id,minimumbet,spread,left_odds,middle_odds,right_odds,flag,starttime,confirmations)
+                                creater_address = '0x' + x.get('from')
+                                creater_address = creater_address if len(creater_address)>40 else ''
                                 
-                                if BetDetail.objects.filter(tx_hash=tx):
-                                    pass
-                                else:
-                                    BetDetail.objects.create(tx_hash=tx,category=category,game_id=game_id,minimumbet=minimumbet,
+                                try:
+                                    category = str_category(b0)
+                                    game_id = get_game_id(b1)
+                                    minimumbet = fun(b2)
+                                    spread = fun(b3)
+                                    left_odds = fun(b4)
+                                    middle_odds = fun(b5)
+                                    right_odds = fun(b6)
+                                    flag = fun(b7)
+                                    starttime = fun(b8)
+                                    confirmations = fun(b9)
+
+
+                                    print(category,game_id,minimumbet,spread,left_odds,middle_odds,right_odds,flag,starttime,confirmations)
+                                
+                                    if BetDetail.objects.filter(tx_hash=tx):
+                                        BetDetail.objects.filter(tx_hash=tx).update(creater_address=creater_address)
+                                    else:
+                                        BetDetail.objects.create(tx_hash=tx,category=category,game_id=game_id,minimumbet=minimumbet,
                                                              spread=spread,left_odds=left_odds,middle_odds=middle_odds,
                                                              right_odds=right_odds,flag=flag,time_stamp=starttime,
                                                              confirmations=confirmations)
                                 
 
 
+                                except:
+                                    pass
 
 
+                                        
+                                        
+
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
 data()

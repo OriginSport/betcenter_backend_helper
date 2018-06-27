@@ -11,7 +11,7 @@ from utils.basemodel.base import BaseModel
 
 class BetDetail(BaseModel):
 
-
+    creater_address = models.CharField(max_length=70, default='')
     tx_hash = models.CharField(max_length=88, primary_key=True)
     category = models.CharField(max_length=20, null=True, blank=True)
     game_id = models.IntegerField(null=True,blank=True)

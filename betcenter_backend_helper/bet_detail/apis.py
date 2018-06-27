@@ -46,7 +46,27 @@ class QueryBetDeatilByTxhashAPI(AbstractAPI):
 query_bet_detail_by_txhash_api = QueryBetDeatilByTxhashAPI().wrap_func()
 
 
+class QueryBetDeatilByAddressAPI(AbstractAPI):
+    def config_args(self):
+        self.args = {
+                'address': 'r',
+                'network_id': 'r',
+                }
+    def access_db(self, kwarg):
+        network_id = kwarg['network_id']
+        address = kwarg['address']
 
+        bds = BetDetail.objects.filter(creater_address=address, network_id=network_id).all().order_by('-time_stamp')
+        data = format_bet_details(bds)
+
+        return True, data
+
+    def format_data(self, data):
+        if data[0]:
+            return ok_json(data[1])
+        return fail_json(err.ERROR_CODE_DATABASE_QUERY_ERROR)
+
+query_bet_detail_by_address_api = QueryBetDeatilByAddressAPI().wrap_func()
 
 
 

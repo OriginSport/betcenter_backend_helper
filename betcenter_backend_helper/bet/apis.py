@@ -82,3 +82,20 @@ class QueryBetByCategoryAPI(AbstractAPI):
 
 query_bet_by_category_api = QueryBetByCategoryAPI().wrap_func()
 
+'''
+# wager record
+class QueryBetByAddressAPI(AbstractAPI):
+    def config_args(self):
+        self.args = {
+                'category': ('o', None),
+                'address': 'r',
+                'network_id': 'r',
+                }
+    def access_db(self, kwarg):
+        network_id = kwarg['network_id']
+        category = kwarg['category']
+        address = kwarg['address']
+
+        if category:
+
+'''
