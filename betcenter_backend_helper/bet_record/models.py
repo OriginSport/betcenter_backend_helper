@@ -22,6 +22,8 @@ class BetRecord(BaseModel):
     network_id = models.IntegerField(default=1)
     game_id = models.IntegerField(null=True,blank=True)
     main_contract_txhash = models.CharField(max_length=88, default='')
+    choice = models.CharField(max_length=3, default='')
+
 
     
 

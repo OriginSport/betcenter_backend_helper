@@ -195,17 +195,36 @@ def data():
                                     print('contract',addr, 'game_id', game_id)
                                     print('main_contract_txhash',main_contract_tx_contract_dic.get(addr))
 
+                                    input_url = 'https://www.etherchain.org/api/tx/%s' % tx_hash
+                                    if input_url:
+                                        r = requests.get(input_url, timeout=30)
+                                        if r.status_code == 200:
+                                            if r.json():
+                                                data = r.json()
+                                                data = data[0]
+                                                input = data.get('input')
+                                                if len(input) > 64:
+                                                    input = input[-64:]
+                                                    choice = int('0x' + input, 16)
+
+                                                else:
+                                                    choice = ''
+                                    print('choice', choice)
+
 
 
                                     if value>0:
                                         if BetRecord.objects.filter(tx_hash=tx_hash, address=address, to=to):
                                             BetRecord.objects.filter(tx_hash=tx_hash, address=address, to=to).update(category='world_cup',
                                             contract=addr,time_stamp=time_stamp,time=utc_str,game_id=game_id,
-                                                                            main_contract_txhash=main_contract_txhash)
+                                            main_contract_txhash=main_contract_txhash, choice=choice)
                                         else:
                                             BetRecord.objects.create(tx_hash=tx_hash,address=address, to=to, time=utc_str,
-                                                                     quantity=value,game_id=game_id, contract=addr,
-                                                                     main_contract_txhash=main_contract_txhash)
+                                            quantity=value,game_id=game_id, contract=addr,time_stamp=time_stamp,
+                                            main_contract_txhash=main_contract_txhash, choice=choice)
+
+
+
 
 
 
