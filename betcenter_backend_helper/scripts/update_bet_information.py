@@ -140,6 +140,20 @@ def data():
 
                                 creater_address = '0x' + x.get('from')
                                 creater_address = creater_address if len(creater_address)>40 else ''
+
+                                new_url = 'https://api.etherscan.io/api?module=account&action=txlistinternal&txhash=%s&apikey=YourApiKeyToken' %tx
+                                if new_url:
+                                    r = requests.get(new_url, timeout=30)
+                                    if r.status_code == 200:
+                                        if r.json():
+                                            data = r.json()
+                                            status = data.get('status')
+                                            message = data.get('message')
+
+                                            if status == '1':
+                                                if message == 'OK':
+                                                    result = data.get('result')
+                                                    contract_address = result[0].get('contractAddress')
                                 
                                 try:
                                     category = str_category(b0)
@@ -154,15 +168,15 @@ def data():
                                     confirmations = fun(b9)
 
 
-                                    print(category,game_id,minimumbet,spread,left_odds,middle_odds,right_odds,flag,starttime,confirmations)
+                                    print(category,game_id,minimumbet,spread,left_odds,middle_odds,right_odds,flag,starttime,confirmations, contract_address)
                                 
                                     if BetDetail.objects.filter(tx_hash=tx):
-                                        BetDetail.objects.filter(tx_hash=tx).update(creater_address=creater_address)
+                                        BetDetail.objects.filter(tx_hash=tx).update(creater_address=creater_address,contract=contract_address)
                                     else:
                                         BetDetail.objects.create(tx_hash=tx,category=category,game_id=game_id,minimumbet=minimumbet,
                                                              spread=spread,left_odds=left_odds,middle_odds=middle_odds,
                                                              right_odds=right_odds,flag=flag,time_stamp=starttime,
-                                                             confirmations=confirmations)
+                                                             confirmations=confirmations,creater_address=creater_address,contract=contract_address)
                                 
 
 
