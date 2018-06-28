@@ -68,8 +68,11 @@ def get_game_id(b):
 
         for i in range(len(str_l)):
             str_l[i] = int(str_l[i])
-
-        game_id = reduce(num, str_l)
+        
+        if str_l:
+            game_id = reduce(num, str_l)
+        else:
+            game_id=''
         return game_id
 
 
