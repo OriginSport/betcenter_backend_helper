@@ -154,6 +154,7 @@ def data():
                                                 if message == 'OK':
                                                     result = data.get('result')
                                                     contract_address = result[0].get('contractAddress')
+                                                    deposit = result[0].get('value')
                                 
                                 try:
                                     category = str_category(b0)
@@ -171,12 +172,12 @@ def data():
                                     print(category,game_id,minimumbet,spread,left_odds,middle_odds,right_odds,flag,starttime,confirmations, contract_address)
                                 
                                     if BetDetail.objects.filter(tx_hash=tx):
-                                        BetDetail.objects.filter(tx_hash=tx).update(creater_address=creater_address,contract=contract_address)
+                                        BetDetail.objects.filter(tx_hash=tx).update(creater_address=creater_address,contract=contract_address,deposit=deposit)
                                     else:
                                         BetDetail.objects.create(tx_hash=tx,category=category,game_id=game_id,minimumbet=minimumbet,
                                                              spread=spread,left_odds=left_odds,middle_odds=middle_odds,
                                                              right_odds=right_odds,flag=flag,time_stamp=starttime,
-                                                             confirmations=confirmations,creater_address=creater_address,contract=contract_address)
+                                                             confirmations=confirmations,creater_address=creater_address,contract=contract_address,deposit=deposit)
                                 
 
 

@@ -215,16 +215,21 @@ def data():
                                     print('choice', choice)
 
 
+                                    try:
+                                        if value>0:
+                                            if game_id:
+                                                if BetRecord.objects.filter(tx_hash=tx_hash, address=address, to=to):
+                                                    BetRecord.objects.filter(tx_hash=tx_hash, address=address, to=to).update(category='world_cup',
+                                                    contract=addr,time_stamp=time_stamp,time=utc_str,game_id=game_id,
+                                                    main_contract_txhash=main_contract_txhash, choice=choice)
+                                                else:
+                                                    BetRecord.objects.create(tx_hash=tx_hash,address=address, to=to, time=utc_str,
+                                                    quantity=value,game_id=game_id, contract=addr,time_stamp=time_stamp,
+                                                    main_contract_txhash=main_contract_txhash, choice=choice)
 
-                                    if value>0:
-                                        if BetRecord.objects.filter(tx_hash=tx_hash, address=address, to=to):
-                                            BetRecord.objects.filter(tx_hash=tx_hash, address=address, to=to).update(category='world_cup',
-                                            contract=addr,time_stamp=time_stamp,time=utc_str,game_id=game_id,
-                                            main_contract_txhash=main_contract_txhash, choice=choice)
-                                        else:
-                                            BetRecord.objects.create(tx_hash=tx_hash,address=address, to=to, time=utc_str,
-                                            quantity=value,game_id=game_id, contract=addr,time_stamp=time_stamp,
-                                            main_contract_txhash=main_contract_txhash, choice=choice)
+
+                                    except:
+                                        pass
 
 
 

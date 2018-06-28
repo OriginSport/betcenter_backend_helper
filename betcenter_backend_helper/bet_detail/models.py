@@ -25,6 +25,8 @@ class BetDetail(BaseModel):
     time_stamp = models.CharField(max_length=30)
     confirmations = models.IntegerField(null=True,blank=True)
     network_id = models.IntegerField(default=1)
+    deposit = models.CharField(max_length=25, default='')
+
 
 
 
