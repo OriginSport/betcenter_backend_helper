@@ -37,8 +37,9 @@ def str_category(b):
     if len(b)==64:
         l = []
         for i in range(0,60):
-            if b[i]==b[i+1]==b[i+2]:
-                l.append(i)
+            if b[i]=='0':
+                if b[i]==b[i+1]==b[i+2]:
+                    l.append(i)
 
         if l[0]%2==0:
             b = b[0:l[0]]
@@ -96,7 +97,7 @@ def get_game_id(b):
         return game_id
 
 
-
+# data
 def data():
     tx_hash_list = []
     con_url = 'https://api.etherscan.io/api?module=logs&action=getLogs&fromBlock=379224&toBlock=latest&address=0xF70e44e803e66C40890AC4875E5036fDb55b5E81'

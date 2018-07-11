@@ -10,7 +10,7 @@ import datetime
 import time
 import math
 from functools import reduce
-
+'''
 abs_path = os.path.abspath(__file__)
 project_path = '/'.join(abs_path.split('/')[:-3])
 sys.path.insert(0, project_path)
@@ -20,7 +20,7 @@ django.setup()
 
 from betcenter_backend_helper.bet.models import BetItem
 from betcenter_backend_helper.bet_record.models import BetRecord
-
+'''
 
 def split_three(str):
     #split data into three parts,
@@ -46,16 +46,16 @@ def get_game_id(b):
     if len(b)==64:
         l = []
         for i in range(0,60):
-            if b[i] == '0':
+            if b[i] =='0':
                 if b[i]==b[i+1]==b[i+2]:
                     l.append(i)
 
-        if l[0]%2==0:
-            b = b[0:l[0]]
+        if l:
+            if l[0]%2==0:
+                b = b[0:l[0]]
 
-        else:
-            b = b[0:l[1]]
-
+            else:
+                b = b[0:l[1]]
         L = []
         for x in range(int(len(b) / 2)):
             L.append(b[2 * x:2 * x + 2])
@@ -68,27 +68,23 @@ def get_game_id(b):
 
 
         for i in range(len(str_l)):
-            str_l[i] = int(str_l[i])
-        
+            if int(str_l[i])>=0:
+                str_l[i] = int(str_l[i])
+
         if str_l:
+
             game_id = reduce(num, str_l)
         else:
             game_id=''
         return game_id
 
 
-
-
 def data():
     #找合约地址,合约不常变
 
-    #contract_list = ['0x35BAB7165A301E99c75C3e59B48817856b4D5e5c']
-    # 0xF70e44e803e66C40890AC4875E5036fDb55b5E81    06-22新合约地址
-
-    contract_list = ['0xF70e44e803e66C40890AC4875E5036fDb55b5E81']
+    contract_list = ['0x3a15B73ed9E56A208EBbE6ef69B9aF67E05913F5']
 
     for contract in contract_list:
-        #url = 'http://api.etherscan.io/api?module=account&action=txlist&address=0xF70e44e803e66C40890AC4875E5036fDb55b5E81&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken'
         url = 'https://api.etherscan.io/api?module=logs&action=getLogs&fromBlock=379224&toBlock=latest&address=0xF70e44e803e66C40890AC4875E5036fDb55b5E81'
         if url:
             r = requests.get(url, timeout=30)
@@ -159,6 +155,7 @@ def data():
         print('contract_address_list','======================')
         print(main_contract_tx_contract_dic)
         print(contract_address_list)
+
         for addr in contract_address_list:
             url = 'http://api.etherscan.io/api?module=account&action=txlist&address=%s&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken' %addr
             if url:
@@ -215,27 +212,25 @@ def data():
                                                     choice = ''
                                     print('choice', choice)
 
-
                                     try:
-                                        if value>0:
+                                        if value > 0:
                                             if game_id:
-                                                if BetRecord.objects.filter(tx_hash=tx_hash, address=address, to=to):
-                                                    BetRecord.objects.filter(tx_hash=tx_hash, address=address, to=to).update(category='world_cup',
-                                                    contract=addr,time_stamp=time_stamp,time=utc_str,game_id=game_id,
-                                                    main_contract_txhash=main_contract_txhash, choice=choice)
-                                                else:
-                                                    BetRecord.objects.create(tx_hash=tx_hash,address=address, to=to, time=utc_str,
-                                                    quantity=value,game_id=game_id, contract=addr,time_stamp=time_stamp,
-                                                    main_contract_txhash=main_contract_txhash, choice=choice)
+                                                if choice:
+                                                    if BetRecord.objects.filter(tx_hash=tx_hash, address=address, to=to):
+                                                        BetRecord.objects.filter(tx_hash=tx_hash, address=address, to=to).update(
+                                                        category='world_cup',contract = addr, time_stamp = time_stamp, time = utc_str, game_id = game_id,
+                                                        main_contract_txhash=main_contract_txhash, choice=choice, network_id=3)
 
+                                                    else:
+
+                                                        BetRecord.objects.create(tx_hash=tx_hash, address=address, to=to, time=utc_str,
+                                                                             quantity=value, game_id=game_id,
+                                                                             contract=addr, time_stamp=time_stamp,
+                                                                             main_contract_txhash=main_contract_txhash,
+                                                                             choice=choice, network_id=3)
 
                                     except:
                                         pass
-
-
-
-
-
 
 
 data()
