@@ -30,17 +30,23 @@ class QueryDiceRecordByAddressAPI(AbstractAPI):
                 'type': 'r',
                 'page': ('o', 1),
                 'page_size': ('o', 20),
+                'win': ('o', None),
                 }
     def access_db(self, kwarg):
         network_id = kwarg['network_id']
         address = kwarg['address']
         type = kwarg['type']
+        win = kwarg['win']
+
         if address:
             drs = DiceRecord.objects.filter(is_active=True,address_from=address, network_id=network_id, modulo=type).all().order_by('-time_stamp')
 
         else:
-            drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, modulo=type).all().order_by('-time_stamp')
-
+            if win:
+                drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, modulo=type, jackpot_payment__gt=0).all().order_by('-time_stamp')
+            else:
+                drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, modulo=type).all().order_by('-time_stamp')
+        
         paginator = CommonPaginator(drs, lambda x: format_dice_records(x), int(kwarg['page']), int(kwarg['page_size']), kwarg['request'])
 
 
@@ -75,7 +81,7 @@ class QueryMaxWinPlayerAPI(AbstractAPI):
         now_str = now.strftime('%Y-%m-%d %H:%M:%S')
         date_day_str = date_day.strftime('%Y-%m-%d %H:%M:%S')
 
-        drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, jackpot_payment__gte=0, time__gte=date_day_str, time__lte=now_str).all().order_by('-jackpot_payment')
+        drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, jackpot_payment__gt=0, time__gte=date_day_str, time__lte=now_str).all().order_by('-jackpot_payment')
         address_list = []
         rank_list = []
         for dr in drs:
