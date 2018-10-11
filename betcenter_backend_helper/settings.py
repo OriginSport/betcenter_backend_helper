@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'betcenter_backend_helper.bet',
     'betcenter_backend_helper.bet_record',
     'betcenter_backend_helper.bet_detail',
+    'betcenter_backend_helper.dice',
 ]
 
 MIDDLEWARE = [

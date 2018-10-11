@@ -21,6 +21,8 @@ urlpatterns = [
     url(r'^betcenter/api/', include('betcenter_backend_helper.bet.urls')),
     url(r'^betcenter/api/', include('betcenter_backend_helper.bet_record.urls')),
     url(r'^betcenter/api/', include('betcenter_backend_helper.bet_detail.urls')),
+    url(r'^betcenter/api/', include('betcenter_backend_helper.dice.urls')),
+
 
 
 ]
