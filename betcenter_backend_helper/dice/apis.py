@@ -94,13 +94,21 @@ class QueryMaxWinPlayerAPI(AbstractAPI):
         date_day_str = date_day.strftime('%Y-%m-%d %H:%M:%S')
 
         drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, jackpot_payment__gt=0, time__gte=date_day_str, time__lte=now_str).all().order_by('-jackpot_payment')
-        address_list = []
-        rank_list = []
+        address_jackpot_payment_dic = {}
         for dr in drs:
-            if dr.address_from not in address_list:
-                address_list.append(dr.address_from)
-                rank_list.append({'address': dr.address_from, 'win_amount': dr.jackpot_payment})
-        return True, rank_list[:3]
+            if dr.address_from in address_jackpot_payment_dic:
+                address_jackpot_payment_dic[dr.address_from] += dr.jackpot_payment
+
+            else:
+                address_jackpot_payment_dic[dr.address_from] = dr.jackpot_payment
+
+        #address_list = []
+        rank_list = sorted(address_jackpot_payment_dic.items(),key = lambda x:x[1],reverse = True)
+        new_rank_list = []
+        for x in rank_list[:3]:
+            new_rank_list.append({'address': x[0], 'win_amount': x[1]})
+        
+        return True, new_rank_list[:3]
     def format_data(self, data):
         if data[0]:
             return ok_json(data=data[1])
