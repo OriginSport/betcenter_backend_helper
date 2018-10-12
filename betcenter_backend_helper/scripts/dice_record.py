@@ -30,137 +30,99 @@ def split_five(str):
     #split data into five parts,
     l = []
     if len(str)==322:
-        a = str[2:66]
-        b = str[66:130]
-        c = str[130:194]
-        d = str[194:258]
-        e = str[258:322]
-
-        a = int('0x'+a,16) #choice
-
-        b = '0x' + b #reveal
-
-        c = int('0x'+c,16) #result
-
-        d = int('0x'+d,16) #amount
-
-        e = int('0x'+e,16) #winAmount
-
-        l = [a, b, c, d, e]
+        choice = str[2:66]
+        reveal = str[66:130]
+        result = str[130:194]
+        amount = str[194:258]
+        win_amount = str[258:322]
+        choice = int('0x' + choice,16) #choice
+        reveal = '0x' + reveal #reveal
+        result = int('0x' + result,16) #result
+        amount = int('0x' + amount,16) #amount
+        win_amount = int('0x' + win_amount,16) #winAmount
+        l = [choice, reveal, result, amount, win_amount]
 
         return l
 
-'''
-def split_eight(str):
-    # split data into eight parts,
-    l = []
-    if len(str) == 514:
-        a = str[2:66]
-        b = str[66:130]
-        c = str[130:194]
-        d = str[194:258]
-        e = str[258:322]
-        f = str[322:386]
-        g = str[386:450]
-        h = str[450:514]
-
-        a = int('0x' + a, 16)  #
-
-        b = int('0x' + b, 16)  #
-
-        c = int('0x' + c, 16)  #
-
-        d = int('0x' + d, 16)  #
-
-        e = int('0x' + e, 16)  #
-
-        l = [a, b, c, d, e]
-
-        return l
-'''
 
 def data(network_id):
-    for i in range(0,1):
-        for y in range(0,1):
-            if network_id==1:
-                main_contract_txhash = ''
-                contract_url = ''
-            elif network_id==3:
-                main_contract_txhash = '0xd43bee68a9ae0ca71257bdddd8ff89a836f57e95'
-                contract_url ='https://api-ropsten.etherscan.io/api?module=logs&action=getLogs&fromBlock=379224&toBlock=latest&address=0xd43bee68a9ae0ca71257bdddd8ff89a836f57e95&topic0=0x0b69c882106d473936244e69933a842887f623d0eb2bb247dcb75215d461bd7b'
-                address_to = '0xD43BeE68A9ae0ca71257BdddD8ff89a836f57e95'
-            if contract_url:
-                r = requests.get(contract_url, timeout=30)
-                if r.status_code == 200:
-                    if r.json():
-                        data = r.json()
-                        status = data.get('status')
-                        message = data.get('message')
 
-                        tx_hash_list = []
+    contract_config = {
+        1: {
+            'address': [],
+            'url': 'https://api.etherscan.io/api?module=logs&action=getLogs&fromBlock=379224&toBlock=latest&address=%s&topic0=%s'
+        },
+        3: {
+            'address': ['0xd43bee68a9ae0ca71257bdddd8ff89a836f57e95', '0x7bcf2c682d8e5dd9ca9ad046e3a431ccbf03a76a'],
+            'url': 'https://api-ropsten.etherscan.io/api?module=logs&action=getLogs&fromBlock=379224&toBlock=latest&address=%s&topic0=%s'
+        }
+    }
+    addresses = contract_config[network_id]['address']
 
-                        if status == '1':
-                            if message == 'OK':
-                                result = data.get('result')
+    topic0 = '0x0b69c882106d473936244e69933a842887f623d0eb2bb247dcb75215d461bd7b'
+    for address in addresses:
+        url = contract_config[network_id]['url'] % (address, topic0)
+        address_to = address
+        contract_address = address
 
-                                for x in result:
-                                    hash = x.get('transactionHash')
+        r = requests.get(url, timeout=30)
+        if r.status_code == 200:
+            if r.json():
+                data = r.json()
+                status = data.get('status')
+                message = data.get('message')
 
-                                    tx_hash_list.append(hash)
+                if status == '1' and message == 'OK':
+                    result = data.get('result')
+                    for x in result:
+                        transactionHash = x.get('transactionHash')
+                        data = x.get('data')
 
-                                    data = x.get('data')
+                        if len(data) == 322:
+                            l = split_five(data)
+                            choice = l[0]
+                            reveal = l[1]
+                            result = l[2]
+                            amount = l[3]
+                            jackpot_payment = l[4]  # win_amount
 
-                                    if len(data)==322:
-                                        l = split_five(data)
+                        timestamp = int(x.get('timeStamp'), 16)
+                        time_ = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))
+                        modulo = int(x.get('topics')[2], 16)
+                        address_from = '0x' + x.get('topics')[1][26:]
 
-                                        choice = l[0]
-                                        reveal = l[1]
-                                        result = l[2]
-                                        amount = int(l[3])
-                                        jackpot_payment = int(l[4]) #winamount
+                        print(network_id, choice, result, reveal, address_to, time_, timestamp, modulo, jackpot_payment, amount)
 
-                                    timestamp = int(x.get('timeStamp'),16)
-                                    time_ = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))
+                        if DiceRecord.objects.filter(transactionHash=transactionHash):
+                            pass
 
-                                    modulo = int(x.get('topics')[2], 16)
+                            '''
+                            DiceRecord.objects.filter(transactionHash=transactionHash).update(network_id=network_id, choice=choice,
+                                                                              result=result, reveal=reveal,
+                                                                              contract_address=contract_address,
+                                                                              address_to=address_to,
+                                                                              address_from=address_from, time=time_,
+                                                                              time_stamp=timestamp,
+                                                                              modulo=modulo,
+                                                                              jackpot_payment=jackpot_payment,
+                                                                              amount=amount)
+                            '''
 
-                                    address_from = '0x' + x.get('topics')[1][26:]
-
-                                    print(address_from, hash, modulo, time_, timestamp, choice, reveal, result, amount, jackpot_payment, type(amount), type(jackpot_payment))
-
-                                    if DiceRecord.objects.filter(tx_hash=hash):
-                                        DiceRecord.objects.filter(tx_hash=hash).update(network_id=3, choice=choice, result=result, reveal=reveal,
-                                        main_contract_txhash=main_contract_txhash, address_to=address_to,
-                                        address_from=address_from, time=time_, time_stamp=timestamp, modulo=modulo,
-                                        jackpot_payment=jackpot_payment, amount=amount)
-                                        print('22222222222222222222222')
-                                    else:
-                                        DiceRecord.objects.create(network_id=3, choice=choice, result=result, reveal=reveal,
-                                        tx_hash=hash, main_contract_txhash=main_contract_txhash, address_to=address_to,
-                                        address_from=address_from)
-
-                                    '''
-                                    if network_id==1:
-                                        tx_url = ''
-                                    elif network_id==3:
-                                        tx_url = 'https://api.infura.io/v1/jsonrpc/ropsten/eth_getTransactionReceipt?params=[%22%s%22]' %hash
-
-                                    if tx_url:
-                                        r = requests.get(tx_url, timeout=30)
-                                        if r.status_code == 200:
-                                            if r.json():
-                                                data = r.json()
-                                                data = data['result']
-                                                
-                                    '''
+                        else:
+                            DiceRecord.objects.create(transactionHash=transactionHash, network_id=network_id, choice=choice,
+                                                      result=result, reveal=reveal,
+                                                      contract_address=contract_address,
+                                                      address_to=address_to, address_from=address_from, time=time_,
+                                                      time_stamp=timestamp,
+                                                      modulo=modulo, jackpot_payment=jackpot_payment, amount=amount)
 
 
 
 
-data(3)
 
-
-
+if __name__ == "__main__":
+    data(1)
+    data(3)
 
 
 

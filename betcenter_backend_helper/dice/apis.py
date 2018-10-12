@@ -37,15 +37,27 @@ class QueryDiceRecordByAddressAPI(AbstractAPI):
         address = kwarg['address']
         type = kwarg['type']
         win = kwarg['win']
+        
+        if type=='all':
+            if address:
+                drs = DiceRecord.objects.filter(is_active=True,address_from=address, network_id=network_id).all().order_by('-time_stamp')
 
-        if address:
-            drs = DiceRecord.objects.filter(is_active=True,address_from=address, network_id=network_id, modulo=type).all().order_by('-time_stamp')
+            else:
+                if win:
+                    drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, jackpot_payment__gt=0).all().order_by('-time_stamp')
+                else:
+                    drs = DiceRecord.objects.filter(is_active=True,network_id=network_id).all().order_by('-time_stamp')
 
         else:
-            if win:
-                drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, modulo=type, jackpot_payment__gt=0).all().order_by('-time_stamp')
+            if address:
+                drs = DiceRecord.objects.filter(is_active=True,address_from=address, network_id=network_id, modulo=type).all().order_by('-time_stamp')
+
             else:
-                drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, modulo=type).all().order_by('-time_stamp')
+                if win:
+                    drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, modulo=type, jackpot_payment__gt=0).all().order_by('-time_stamp')
+                else:
+                    drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, modulo=type).all().order_by('-time_stamp')
+
         
         paginator = CommonPaginator(drs, lambda x: format_dice_records(x), int(kwarg['page']), int(kwarg['page_size']), kwarg['request'])
 

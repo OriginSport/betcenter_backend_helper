@@ -16,14 +16,14 @@ class DiceRecord(BaseModel):
     bet_block_hash = models.CharField(max_length=66)
     bet_mask = models.CharField(max_length=4) #%40,%50
     commit = models.CharField(max_length=66) #唯一标识
-    dice_payment = models.BigIntegerField() #预计奖励
+    dice_payment = models.BigIntegerField(default=0) #预计奖励
     jackpot_payment = models.BigIntegerField() #实际奖励
     modulo = models.CharField(max_length=4) #取模, 2, 6, 12, 100(type)
     reveal = models.CharField(max_length=66)
     reveal_block_hash = models.CharField(max_length=66)
     reveal_tx_hash = models.CharField(max_length=66)
-    tx_hash = models.CharField(max_length=66)
-    main_contract_txhash = models.CharField(max_length=88, default='')# test and online
+    transactionHash = models.CharField(max_length=66)
+    contract_address = models.CharField(max_length=88, default='')# test and online
     network_id = models.IntegerField(default=1)
     time_stamp = models.CharField(max_length=20, null=True, blank=True)
     time = models.DateTimeField(null=True, db_index=True, default=None)
@@ -46,7 +46,7 @@ class DiceRecord(BaseModel):
             #data.pop('commit')
             data.pop('dice_payment')
             data.pop('reveal_block_hash')
-            data.pop('main_contract_txhash')
+            data.pop('contract_address')
             data.pop('reveal_tx_hash')
         return data
 
