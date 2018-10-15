@@ -29,7 +29,7 @@ class QueryDiceRecordByAddressAPI(AbstractAPI):
                 'network_id': 'r',
                 'type': 'r',
                 'page': ('o', 1),
-                'page_size': ('o', 20),
+                'page_size': ('o', 10),
                 'win': ('o', None),
                 }
     def access_db(self, kwarg):
@@ -94,6 +94,11 @@ class QueryMaxWinPlayerAPI(AbstractAPI):
         date_day_str = date_day.strftime('%Y-%m-%d %H:%M:%S')
 
         drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, jackpot_payment__gt=0, time__gte=date_day_str, time__lte=now_str).all().order_by('-jackpot_payment')
+        address_count = drs.values('address_from').distinct().count()
+        if address_count<3:
+            date_day = now - datetime.timedelta(hours=72)
+            date_day_str = date_day.strftime('%Y-%m-%d %H:%M:%S')
+            drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, jackpot_payment__gt=0, time__gte=date_day_str, time__lte=now_str).all().order_by('-jackpot_payment')
         address_jackpot_payment_dic = {}
         for dr in drs:
             if dr.address_from in address_jackpot_payment_dic:
@@ -102,13 +107,12 @@ class QueryMaxWinPlayerAPI(AbstractAPI):
             else:
                 address_jackpot_payment_dic[dr.address_from] = dr.jackpot_payment
 
-        #address_list = []
         rank_list = sorted(address_jackpot_payment_dic.items(),key = lambda x:x[1],reverse = True)
         new_rank_list = []
-        for x in rank_list[:3]:
+        for x in rank_list[:10]:
             new_rank_list.append({'address': x[0], 'win_amount': x[1]})
         
-        return True, new_rank_list[:3]
+        return True, new_rank_list[:10]
     def format_data(self, data):
         if data[0]:
             return ok_json(data=data[1])
