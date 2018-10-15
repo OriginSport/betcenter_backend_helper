@@ -49,7 +49,7 @@ def data(network_id):
 
     contract_config = {
         1: {
-            'address': [],
+            'address': ['0x5085c5356129ee11bffb523e3166d7153ac13c75'],
             'url': 'https://api.etherscan.io/api?module=logs&action=getLogs&fromBlock=379224&toBlock=latest&address=%s&topic0=%s'
         },
         3: {
