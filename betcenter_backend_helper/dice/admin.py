@@ -3,7 +3,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import DiceRecord
+from .models import DiceRecord, Refund
 
 
 #@admin.register(DiceRecord)
@@ -14,4 +14,8 @@ class DiceRecordAdmin(admin.ModelAdmin):
 admin.site.register(DiceRecord, DiceRecordAdmin)
 
 
+class RefundAdmin(admin.ModelAdmin):
+    list_display = ('time', 'network_id', 'amount', 'transactionHash')
+    list_filter = ('network_id',)
 
+admin.site.register(Refund, RefundAdmin)

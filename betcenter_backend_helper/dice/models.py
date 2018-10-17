@@ -58,8 +58,20 @@ def format_dice_records(records):
     return [o.get_json() for o in records]
 
 
+class Refund(BaseModel):
+    address_from = models.CharField(max_length=42)
+    address_to = models.CharField(max_length=42)
+    amount = models.BigIntegerField() #/10^18 投注
+    commit = models.CharField(max_length=66) 
+    transactionHash = models.CharField(max_length=66)
+    contract_address = models.CharField(max_length=88, default='')# test and online
+    network_id = models.IntegerField(default=1)
+    time_stamp = models.CharField(max_length=20, null=True, blank=True)
+    time = models.DateTimeField(null=True, db_index=True, default=None)
 
 
+def format_refunds(refunds):
+    return [o.get_json() for o in refunds]
 
 
 

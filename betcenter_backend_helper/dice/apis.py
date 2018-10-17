@@ -10,7 +10,7 @@ from django.db import transaction
 import utils.errors as err
 from utils.view_tools import ok_json, fail_json, get_real_ip
 from utils.abstract_api import AbstractAPI
-from .models import DiceRecord, format_dice_records
+from .models import DiceRecord, format_dice_records, Refund, format_refunds
 from utils.paginator import CommonPaginator
 
 import math
@@ -122,4 +122,34 @@ class QueryMaxWinPlayerAPI(AbstractAPI):
 query_max_win_player_api = QueryMaxWinPlayerAPI().wrap_func()
 
 
+class QueryRefundByAddressAPI(AbstractAPI):
+    def config_args(self):
+        self.args = {
+            'address': 'r',
+            'network_id': 'r',
+            'page': ('o', 1),
+            'page_size': ('o', 10),
+            }
 
+    def access_db(self, kwarg):
+        network_id = kwarg['network_id']
+        address = kwarg['address']
+
+        rs = Refund.objects.filter(is_active=True,address_from=address, network_id=network_id).all().order_by('-time_stamp')
+        paginator = CommonPaginator(rs, lambda x: format_refunds(x), int(kwarg['page']), int(kwarg['page_size']), kwarg['request'])
+        
+        return paginator
+
+    def format_data(self, data):
+        if data:
+            return ok_json(data={
+                'count': data.count,
+                'refunds': data.entries,
+                'page': data.page,
+                'page_size': data.page_size,
+                'next': data.next,
+                'has_next':data.has_next
+            })
+        return fail_json(err.ERROR_CODE_DATABASE_QUERY_ERROR)
+
+query_refund_by_address_api = QueryRefundByAddressAPI().wrap_func()
