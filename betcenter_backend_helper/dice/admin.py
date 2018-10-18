@@ -22,7 +22,7 @@ admin.site.register(Refund, RefundAdmin)
 
 
 class BetAdmin(admin.ModelAdmin):
-    list_display = ('time', 'network_id', 'amount', 'transactionHash')
+    list_display = ('time', 'network_id', 'modulo', 'choice', 'amount', 'transactionHash')
     list_filter = ('network_id',)
 
 admin.site.register(Bet, BetAdmin)
