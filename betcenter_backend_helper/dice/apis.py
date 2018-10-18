@@ -10,7 +10,7 @@ from django.db import transaction
 import utils.errors as err
 from utils.view_tools import ok_json, fail_json, get_real_ip
 from utils.abstract_api import AbstractAPI
-from .models import DiceRecord, format_dice_records, Refund, format_refunds
+from .models import DiceRecord, format_dice_records, Refund, format_refunds, Bet, format_bets
 from utils.paginator import CommonPaginator
 
 import math
@@ -153,3 +153,50 @@ class QueryRefundByAddressAPI(AbstractAPI):
         return fail_json(err.ERROR_CODE_DATABASE_QUERY_ERROR)
 
 query_refund_by_address_api = QueryRefundByAddressAPI().wrap_func()
+
+
+class QueryBetByAddressAPI(AbstractAPI):
+    def config_args(self):
+        self.args = {
+            'address': ('o', None),
+            'network_id': 'r',
+            'type': 'r',
+            'page': ('o', 1),
+            'page_size': ('o', 10),
+            }
+
+    def access_db(self, kwarg):
+        network_id = kwarg['network_id']
+        address = kwarg['address']
+        type = kwarg['type']
+        
+        if type=='all':
+            if address:
+                bs = Bet.objects.filter(is_active=True, address_from=address, network_id=network_id).all().order_by('-time_stamp')
+            else:
+                bs = Bet.objects.filter(is_active=True, network_id=network_id).all().order_by('-time_stamp')
+        else:
+            if address:
+                bs = Bet.objects.filter(is_active=True, address_from=address, network_id=network_id, modulo=type).all().order_by('-time_stamp')
+            else:
+                bs = Bet.objects.filter(is_active=True, network_id=network_id, modulo=type).all().order_by('-time_stamp')
+
+        paginator = CommonPaginator(bs, lambda x: format_bets(x), int(kwarg['page']), int(kwarg['page_size']), kwarg['request'])
+        
+        return paginator
+
+    def format_data(self, data):
+        if data:
+            return ok_json(data={
+                'count': data.count,
+                'bets': data.entries,
+                'page': data.page,
+                'page_size': data.page_size,
+                'next': data.next,
+                'has_next':data.has_next
+            })
+        return fail_json(err.ERROR_CODE_DATABASE_QUERY_ERROR)
+
+query_bet_by_address_api = QueryBetByAddressAPI().wrap_func()
+
+
