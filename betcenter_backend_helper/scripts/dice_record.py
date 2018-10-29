@@ -50,7 +50,7 @@ def data(network_id):
     contract_config = {
         1: {
             'address': ['0x5085c5356129ee11bffb523e3166d7153ac13c75'],
-            'url': 'https://api.etherscan.io/api?module=logs&action=getLogs&fromBlock=379224&toBlock=latest&address=%s&topic0=%s'
+            'url': 'https://api.etherscan.io/api?module=logs&action=getLogs&fromBlock=6578592&toBlock=latest&address=%s&topic0=%s'
         },
         3: {
             'address': ['0xd43bee68a9ae0ca71257bdddd8ff89a836f57e95', '0x7bcf2c682d8e5dd9ca9ad046e3a431ccbf03a76a'],

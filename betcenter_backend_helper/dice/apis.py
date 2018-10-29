@@ -95,8 +95,9 @@ class QueryMaxWinPlayerAPI(AbstractAPI):
 
         drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, jackpot_payment__gt=0, time__gte=date_day_str, time__lte=now_str).all().order_by('-jackpot_payment')
         address_count = drs.values('address_from').distinct().count()
+        print(address_count)
         if address_count<3:
-            date_day = now - datetime.timedelta(hours=72)
+            date_day = now - datetime.timedelta(hours=100)
             date_day_str = date_day.strftime('%Y-%m-%d %H:%M:%S')
             drs = DiceRecord.objects.filter(is_active=True,network_id=network_id, jackpot_payment__gt=0, time__gte=date_day_str, time__lte=now_str).all().order_by('-jackpot_payment')
         address_jackpot_payment_dic = {}
