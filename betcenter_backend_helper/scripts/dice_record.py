@@ -25,6 +25,14 @@ from betcenter_backend_helper.bet_detail.models import BetDetail
 from betcenter_backend_helper.dice.models import DiceRecord
 
 
+def get_start_block_number(network_id):
+    if network_id == 1:
+        url = 'https://api.infura.io/v1/jsonrpc/mainnet/eth_blockNumber'
+    elif network_id == 3:
+        url = 'https://api.infura.io/v1/jsonrpc/ropsten/eth_blockNumber'
+    num = int(requests.get(url, timeout=10).json().get('result'), 16) - 20000
+    return num
+
 
 def split_five(str):
     #split data into five parts,
@@ -50,18 +58,19 @@ def data(network_id):
     contract_config = {
         1: {
             'address': ['0x5085c5356129ee11bffb523e3166d7153ac13c75'],
-            'url': 'https://api.etherscan.io/api?module=logs&action=getLogs&fromBlock=6578592&toBlock=latest&address=%s&topic0=%s'
+            'url': 'https://api.etherscan.io/api?module=logs&action=getLogs&fromBlock=%s&toBlock=latest&address=%s&topic0=%s' 
         },
         3: {
             'address': ['0xd43bee68a9ae0ca71257bdddd8ff89a836f57e95', '0x7bcf2c682d8e5dd9ca9ad046e3a431ccbf03a76a'],
-            'url': 'https://api-ropsten.etherscan.io/api?module=logs&action=getLogs&fromBlock=379224&toBlock=latest&address=%s&topic0=%s'
+            'url': 'https://api-ropsten.etherscan.io/api?module=logs&action=getLogs&fromBlock=%s&toBlock=latest&address=%s&topic0=%s'
         }
     }
     addresses = contract_config[network_id]['address']
 
     topic0 = '0x0b69c882106d473936244e69933a842887f623d0eb2bb247dcb75215d461bd7b'
     for address in addresses:
-        url = contract_config[network_id]['url'] % (address, topic0)
+        url = contract_config[network_id]['url'] % (get_start_block_number(network_id), address, topic0)
+        print(url)
         address_to = address
         contract_address = address
 
