@@ -62,7 +62,7 @@ pytest-xdist==1.22.2
 python-dateutil==2.7.3
 python3-memcached==1.51
 pytz==2018.4
-PyYAML==3.13
+PyYAML==5.4
 redis==2.10.6
 repoze.lru==0.7
 requests==2.18.4
