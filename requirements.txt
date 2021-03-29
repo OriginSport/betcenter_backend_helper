@@ -53,7 +53,7 @@ pycparser==2.19
 pycrypto==2.6.1
 pycryptodome==3.6.6
 pyethash==0.1.27
-Pygments==2.2.0
+Pygments==2.7.4
 pysha3==0.3
 pytest==3.5.1
 pytest-django==3.2.1
